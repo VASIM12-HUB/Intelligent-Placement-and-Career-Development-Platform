@@ -1,0 +1,107 @@
+{% extends 'stu_dashboard.html' %}
+{% load static %}
+{% block content %}
+<style>
+    body {
+        background-image: url('https://images.pexels.com/photos/3527784/pexels-photo-3527784.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: rgba(255, 255, 255, 0.5); /* Add a semi-transparent overlay */
+        background-blend-mode: overlay; /* Blend the image with the overlay */
+        padding: 20px;
+        margin-left: 20px;
+    }
+
+    .container {
+        max-width: 1020px;
+    }
+
+    .card {
+        width: 1000px;
+        background: rgba(255, 255, 255, 0.89); /* More transparency */
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(191, 185, 185, 0.5); /* Soft white border */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    }
+
+    .form-group {
+        text-align: center;
+    }
+
+    .btn-block {
+        display: block;
+        width: 20%;
+    }
+
+    .result-section {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .image-container img {
+        max-width: 100%;
+        height: auto;
+        margin-top: 10px;
+    }
+</style>
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h1 class="text-center mb-4">Candidate Job Matching</h1>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Resume Upload -->
+                <div class="mb-4">
+                    <label for="resume" class="form-label">Upload Resume(s):</label>
+                    <input type="file" name="resume" class="form-control" accept="application/pdf" multiple>
+                </div>
+
+                <!-- Job Description -->
+                <div class="mb-4">
+                    <label for="jd_text" class="form-label">Job Description:</label>
+                    <textarea name="jd_text" class="form-control" rows="4" required>{{ request.POST.jd_text }}</textarea>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-20">Get Match Score</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Result Section -->
+    {% if result_message %}
+        <div class="card mt-5">
+            <div class="card-body text-center">
+                <h2>{{ result_message }}</h2>
+                <img src="{{ result_image }}" alt="Result Image" class="img-fluid my-3" style="max-width: 250px;">
+                <h3>Score: {{ score }}%</h3>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Skills to Improve Section -->
+    {% if skills %}
+    <div class="card mt-5">
+        <div class="card-body">
+            <h3 class="text-center">Skills to Improve</h3>
+            
+            <!-- Show improvement message only once -->
+            <p class="text-center">Consider enhancing your skills not just these, but also those already present in your resume to further upskill yourself.</p>
+            
+            <div class="row justify-content-center">
+                {% for skill, img in skills %}
+                    <div class="col-md-3 text-center">
+                        <h4>{{ skill }}</h4>
+                        <img src="{{ img }}" alt="{{ skill }}" class="img-fluid" style="max-width: 100px;">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}    
+
+</div>
+{% endblock %}

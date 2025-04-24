@@ -1,0 +1,163 @@
+{% extends 'stu_dashboard.html' %}
+
+{% block content %}
+<style>
+    body {
+        padding: 20px;
+        margin-left: 20px;
+        background-image: url('https://images.pexels.com/photos/5922572/pexels-photo-5922572.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: #333; /* Ensures text readability */
+    }
+
+    h2 {
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        border-radius: 10px;
+    }
+
+    .job-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        background: rgba(255, 255, 255, 0.6); /* Light transparency */
+        border-radius: 10px; /* Soft rounded corners */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        backdrop-filter: blur(5px); /* Soft blur effect for glassmorphism */
+    }
+
+    .job-table th, .job-table td {
+        border: 1px solid rgba(0, 0, 0, 0.1); /* Light border */
+        padding: 10px;
+        text-align: center;
+    }
+
+    .job-table th {
+        background-color: rgba(244, 244, 244, 0.7); /* Semi-transparent header */
+    }
+
+    .status {
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .status.applied {
+        color: #0275d8;
+        background-color: rgba(217, 237, 247, 0.8);
+    }
+
+    .status.processing {
+        color: #f0ad4e;
+        background-color: rgba(252, 248, 227, 0.8);
+    }
+
+    .status.placed {
+        color: #5cb85c;
+        background-color: rgba(223, 240, 216, 0.8);
+    }
+
+    .status.rejected {
+        color: #d9534f;
+        background-color: rgba(242, 222, 222, 0.8);
+    }
+
+    .status.eligible-applied {
+        color: #0275d8;
+        background-color: rgba(217, 237, 247, 0.8);
+    }
+</style>
+
+<h2>Jobs You Have Applied To</h2>
+
+{% if messages %}
+<div>
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'error' %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'warning' %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'info' %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if applied_jobs %}
+    <div class="table-container">
+        <table class="job-table">
+            <tr>
+                <th>Company Name</th>
+                <th>Job Role</th>
+                <th>Package</th>
+                <th>Academic Year</th>
+                <th>Applied Status</th>
+                <th>Application Status</th>
+                <th>Latest Notification</th>
+            </tr>
+            {% for job in applied_jobs %}
+            <tr>
+                <td>{{ job.company.name }}</td>
+                <td>{{ job.company.job_role }}</td>
+                <td>{{ job.company.package }} LPA</td>
+                <td>{{ job.company.academic_year }}</td>
+
+                <td>
+                    {% if job.original_status == "ELIGIBLE_APPLIED"  or job.application_status == "ELIGIBLE_APPLIED"%}
+                        <span class="status applied">Applied</span>
+                    {% else %}
+                        <span class="status">N/A</span>
+                    {% endif %}
+                </td>
+                
+                <!-- Display application status based on eligibility -->
+                <td>
+                    {% if job.application_status == "PROCESSING" %}
+                        <span class="status processing">Processing</span>
+                    {% elif job.application_status == "PLACED" %}
+                        <span class="status placed">Placed</span>
+                    {% elif job.application_status == "REJECTED" %}
+                        <span class="status rejected">Rejected</span>
+                    {% else %}
+                        <span class="status">N/A</span>
+                    {% endif %}
+                </td>
+                
+                <td>
+                    {{ job.latest_notification }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% else %}
+    <p>You haven't applied for any jobs yet.</p>
+{% endif %}
+
+{% endblock %}

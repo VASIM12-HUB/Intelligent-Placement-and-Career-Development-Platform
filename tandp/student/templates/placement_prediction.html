@@ -1,0 +1,300 @@
+{% extends 'stu_dashboard.html' %}
+
+{% block content %}
+<style>
+    body {
+        background: url('https://images.pexels.com/photos/12917752/pexels-photo-12917752.jpeg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.6);
+        /* Lighter background with subtle transparency */
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        /* Soft white border */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        /* Slight shadow for depth */
+    }
+
+    .form-control,
+    .btn {
+        background: rgba(255, 255, 255, 0.9);
+        /* Lighter background for form elements */
+        border: none;
+        color: #333;
+        /* Darker text for better readability */
+    }
+
+    .form-control::placeholder {
+        color: rgba(0, 0, 0, 0.5);
+        /* Slightly darker placeholder */
+    }
+
+    .btn {
+        background: #7018b8;
+        /* Purple shade matching the theme */
+        color: white;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12"> <!-- Increased card width here -->
+            <div class="card p-4">
+                <h1 class="text-center" style="font-size: 30px; color: #7018b8;">Student Placement Eligibilty Status
+                </h1>
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if messages %}
+                    <div>
+                        {% for message in messages %}
+                        {% if message.tags == 'success' %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% elif message.tags == 'warning' %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% elif message.tags == 'info' %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if result %}
+                    <div class="mt-4 alert alert-info">
+                        <h4>{{ result }}</h4>
+                        {% if improvement %}
+                        <p>{{ improvement }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Gender Selection (Radio Buttons - Side by Side) -->
+                    <div class="mb-4">
+                        <label for="gender" class="form-label">Gender</label>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <input type="radio" name="gender" value="Male" id="gender_male">
+                                <label for="gender_male">Male</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="radio" name="gender" value="Female" id="gender_female">
+                                <label for="gender_female">Female</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="radio" name="gender" value="Others" id="gender_others">
+                                <label for="gender_others">Others</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- 10th Board Selection (Radio Buttons - Side by Side) -->
+                    <div class="mb-3">
+                        <label for="boards_ten" class="form-label">10th Board & 10th Percentage</label><br>
+                        <div class="d-flex justify-content-start">
+                            <div class="me-3">
+                                <input type="radio" name="boards_ten" value="State" id="boards_ten_state"> <label
+                                    for="boards_ten_state">State</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="radio" name="boards_ten" value="Central" id="boards_ten_central"> <label
+                                    for="boards_ten_central">Central</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="boards_ten" value="Others" id="boards_ten_others"> <label
+                                    for="boards_ten_others">Others</label>
+                            </div>
+                            <div class="ms-4 d-flex align-items-center">
+                                <label for="tenth_percentage" class="me-2">10th %</label>
+                                <input type="number" name="tenth_percentage" id="tenth_percentage"
+                                    class="form-control form-control-sm" required style="width: 80px;" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- 12th Board Selection (Radio Buttons - Side by Side) -->
+                    <div class="mb-3">
+                        <label for="boards_twl" class="form-label">12th Board & Percentage</label>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <input type="radio" name="boards_twl" value="State" id="boards_twl_state">
+                                <label for="boards_twl_state">State</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="radio" name="boards_twl" value="Central" id="boards_twl_central">
+                                <label for="boards_twl_central">Central</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="boards_twl" value="Others" id="boards_twl_others">
+                                <label for="boards_twl_others">Others</label>
+                            </div>
+                            <div class="ms-4 d-flex align-items-center">
+                                <label for="twelfth_percentage" class="me-2">12th %</label>
+                                <input type="number" name="twelfth_percentage" id="twelfth_percentage"
+                                    class="form-control form-control-sm" required style="width: 80px;" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- 12th Stream Selection (Radio Buttons - Side by Side) -->
+                    <div class="mb-3">
+                        <label for="twl_stream" class="form-label">12th Stream</label><br>
+                        <div class="d-flex justify-content-start">
+                            <div class="me-3">
+                                <input type="radio" name="twl_stream" value="MPC" id="twl_stream_mpc"> <label
+                                    for="twl_stream_mpc">MPC</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="twl_stream" value="Others" id="twl_stream_others"> <label
+                                    for="twl_stream_others">Others</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <label class="form-label">UG Percentage & PG Percentage</label>
+                        <div class="d-flex align-items-center">
+                            <div class="me-4 d-flex align-items-center">
+                                <label for="ug_percentage" class="me-2">UG %</label>
+                                <input type="number" name="ug_percentage" id="ug_percentage" class="form-control"
+                                    required style="width: 270px; min-width: 150px;" min="0" max="100">
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <label for="pg_percentage" class="me-2">PG %</label>
+                                <input type="number" name="pg_percentage" id="pg_percentage" class="form-control"
+                                    style="width: 270px; min-width: 180px;" placeholder="Leave it, If You don't have" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Work Experience (Radio Buttons - Side by Side) -->
+                    <div class="mb-3">
+                        <label for="work_experience" class="form-label">Do you have previous work
+                            experience?</label><br>
+                        <div class="d-flex justify-content-start">
+                            <div class="me-3">
+                                <input type="radio" name="work_experience" value="Yes" id="work_experience_yes"> <label
+                                    for="work_experience_yes">Yes</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="work_experience" value="No" id="work_experience_no"> <label
+                                    for="work_experience_no">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Skills (Checkboxes - Side by Side) -->
+                    <div class="mb-3">
+                        <label for="skills" class="form-label">Select your skills</label><br>
+                        <div class="d-flex flex-wrap">
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="Python" id="skills_python"> <label
+                                    for="skills_python">Python</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="C" id="skills_c"> <label
+                                    for="skills_c">C</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="Java" id="skills_java"> <label
+                                    for="skills_java">Java</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="C++" id="skills_cplusplus"> <label
+                                    for="skills_cplusplus">C++</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="R" id="skills_r"> <label
+                                    for="skills_r">R</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="SQL" id="skills_sql"> <label
+                                    for="skills_sql">SQL</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="Machine Learning" id="skills_ml"> <label
+                                    for="skills_ml">Machine Learning</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="AI" id="skills_ai"> <label
+                                    for="skills_ai">AI</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="Deep Learning" id="skills_dl"> <label
+                                    for="skills_dl">Deep Learning</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="Data Science" id="skills_ds"> <label
+                                    for="skills_ds">Data Science</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="JavaScript" id="skills_js"> <label
+                                    for="skills_js">JavaScript</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="HTML" id="skills_html"> <label
+                                    for="skills_html">HTML</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="CSS" id="skills_css"> <label
+                                    for="skills_css">CSS</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="checkbox" name="skills" value="React" id="skills_react"> <label
+                                    for="skills_react">React</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="skills" value="Node" id="skills_node"> <label
+                                    for="skills_node">Node</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button (Bootstrap Styled) -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 20%; margin: 0 auto; display: block;">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

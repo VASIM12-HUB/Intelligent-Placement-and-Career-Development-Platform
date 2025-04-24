@@ -1,0 +1,205 @@
+{% extends 'stu_dashboard.html' %}
+
+{% block content %}
+    <style>
+        body {
+            background-image: url('https://images.pexels.com/photos/7134990/pexels-photo-7134990.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.5);
+            background-blend-mode: overlay;
+            margin-left: 30px;
+        }
+        .question {
+            color: red;
+            font-weight: bold;
+        }
+        .answer {
+            font-weight: bold;
+        }
+        .line {
+            border-top: 2px solid green;
+            margin: 20px 0;
+        }
+        .card-body {
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .slider-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            padding: 0 10px;
+            font-weight: bold;
+        }
+        .slider-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        input[type=range] {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #28a745 33%, #ffc107 66%, #dc3545 100%);
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #000;
+            cursor: pointer;
+        }
+        /* Responsive iframe inside the card */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+    
+    <h1 style="text-align: center; font-size: 50px;">
+        <span style="color: #a39407;">Mock Interview Preparation</span>
+    </h1>
+    {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+    <!-- Level and Category Filter with Auto-Submit -->
+    <form method="get" id="filter-form">
+        <div class="slider-container">
+            <label for="level-slider">Choose the level of difficulty:</label>
+            <input type="range" id="level-slider" name="level-slider" min="1" max="3" value="{% if level == 'Medium' %}2{% elif level == 'Hard' %}3{% else %}1{% endif %}" step="1">
+            <div class="slider-labels">
+                <span>Easy</span>
+                <span>Medium</span>
+                <span>Hard</span>
+            </div>
+            <input type="hidden" name="level" id="level" value="{{ level }}">
+            <p class="slider-value" id="level-display">{{ level }}</p>
+        </div>
+
+        <!-- Category Selection with Auto-Submit -->
+        <div class="form-group">
+            <label for="category">Select Category:</label>
+            <select name="category" id="category" class="form-control">
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    <!-- Questions Section -->
+    <div class="mt-5">
+        {% for question in questions %}
+            <div class="mb-4">
+                <p class="question">Q{{ forloop.counter }}. {{ question.Question }}</p>
+                <p class="answer">Ans: {{ question.Answer }}</p>
+                <div class="line"></div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- YouTube Videos Section -->
+    <div class="mt-5">
+        <h2 class="text-center">YouTube Videos</h2>
+        <div class="row">
+            {% for video in videos %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/{{ video.video_id }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ video.title }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center text-danger">No videos found for the selected criteria.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Auto-submit form when slider or category changes
+        const form = document.getElementById('filter-form');
+        const slider = document.getElementById('level-slider');
+        const levelDisplay = document.getElementById('level-display');
+        const hiddenLevelInput = document.getElementById('level');
+        const categorySelect = document.getElementById('category');
+
+        function updateLevelDisplay(value) {
+            const levels = {1: 'Easy', 2: 'Medium', 3: 'Hard'};
+            levelDisplay.textContent = levels[value];
+            hiddenLevelInput.value = levels[value];
+        }
+
+        slider.addEventListener('input', function() {
+            updateLevelDisplay(this.value);
+            form.submit(); // Auto-submit on slider change
+        });
+
+        categorySelect.addEventListener('change', function() {
+            form.submit(); // Auto-submit on category change
+        });
+
+        // Initialize display on page load
+        updateLevelDisplay(slider.value);
+    </script>
+{% endblock %}

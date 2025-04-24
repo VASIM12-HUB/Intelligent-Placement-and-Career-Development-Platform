@@ -1,0 +1,216 @@
+{% extends 'faculty_dashboard.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-size: 400% 400%;
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+    }
+
+    .form-container {
+        max-width: 900px;
+        background-color: rgba(255, 255, 255, 0.3);
+        /* Semi-transparent */
+        backdrop-filter: blur(10px);
+        /* Frosted glass effect */
+        padding: 25px;
+        border-radius: 15px;
+        margin: 10px auto;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+        margin-top: 30px;
+    }
+
+    .form-container .form-control {
+        border-radius: 10px;
+    }
+
+    .form-container .btn {
+        width: auto;
+        padding: 10px 20px;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            width: 95%;
+        }
+    }
+</style>
+<div class="container mt-4">
+    <h2 class="text-center mb-3">Add Student</h2>
+    <div class="form-container">
+
+        <!-- The form for adding or editing a student -->
+        <form method="POST" enctype="multipart/form-data" class="needs-validation">
+            {% csrf_token %}
+
+            <!-- Display messages (success or error) -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Form Fields -->
+            <div class="row gy-2">
+                <!-- Roll Number -->
+                <div class="col-md-6">
+                    <label for="id_rollno" class="form-label">Roll Number (Username)</label>
+                    <input type="text" name="rollno" id="id_rollno" class="form-control"
+                        value="{{ student_form.rollno.value|default:'' }}">
+                    <div class="text-danger">{{ student_form.rollno.errors }}</div>
+                </div>
+
+                <!-- Gender  -->
+                <div class="col-md-6">
+                    <label for="id_gender" class="form-label">Gender</label>
+                    <select name="gender" id="id_gender" class="form-control">
+                        <option value="">--------</option>
+                        <option value="F" {% if profile_form.gender.value == "F" %}selected{% endif %}>Female</option>
+                        <option value="M" {% if profile_form.gender.value == "M" %}selected{% endif %}>Male</option>
+                        <option value="O" {% if profile_form.gender.value == "O" %}selected{% endif %}>Others</option>
+                    </select>
+                    <div class="text-danger">{{ profile_form.gender.errors }}</div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="col-md-6">
+                    <label for="id_full_name" class="form-label">Full Name</label>
+                    <input type="text" name="full_name" id="id_full_name" class="form-control"
+                        value="{{ student_form.full_name.value|default:'' }}">
+                    <div class="text-danger">{{ student_form.full_name.errors }}</div>
+                </div>
+
+                <!-- Department -->
+                <div class="col-md-6">
+                    <label for="id_department" class="form-label">Department</label>
+                    <input type="text" name="department" id="id_department" class="form-control"
+                        value="{{ profile_form.department.value|default:'' }}">
+                    <div class="text-danger">{{ profile_form.department.errors }}</div>
+                </div>
+
+                <!-- College Email -->
+                <div class="col-md-6">
+                    <label for="id_college_email" class="form-label">College Email</label>
+                    <input type="email" name="college_email" id="id_college_email" class="form-control"
+                        value="{{ profile_form.college_email.value|default:'' }}">
+                    <div class="text-danger">{{ profile_form.college_email.errors }}</div>
+                </div>
+
+                <!-- Year of Study -->
+                <div class="col-md-6">
+                    <label for="id_year_of_study" class="form-label">Year of Study</label>
+                    <input type="text" name="year_of_study" id="id_year_of_study" class="form-control"
+                        value="{{ profile_form.year_of_study.value|default:'' }}" required>
+                    <div class="text-danger">{{ profile_form.year_of_study.errors }}</div>
+                </div>
+
+                <!-- Personal Email -->
+                <div class="col-md-6">
+                    <label for="id_personal_email" class="form-label">Personal Email</label>
+                    <input type="email" name="personal_email" id="id_personal_email" class="form-control"
+                        value="{{ profile_form.personal_email.value|default:'' }}">
+                    <div class="text-danger">{{ profile_form.personal_email.errors }}</div>
+                </div>
+
+                <!-- Passed Out Year (Manual Entry Only) -->
+                <div class="col-md-6">
+                    <label for="id_passed_out_year" class="form-label">Passed Out Year</label>
+                    <input type="text" name="passed_out_year" id="id_passed_out_year" class="form-control" required>
+                    <div class="text-danger">{{ profile_form.passed_out_year.errors }}</div>
+                </div>
+
+                <!-- SSC Percentage -->
+                <div class="col-md-6">
+                    <label for="id_ssc_percentage" class="form-label">SSC Percentage</label>
+                    <input type="text" name="ssc_percentage" id="id_ssc_percentage" class="form-control"
+                        value="{{ profile_form.ssc_percentage.value|default:'' }}">
+                    <div class="text-danger">{{ profile_form.ssc_percentage.errors }}</div>
+                </div>
+
+                <!-- Password -->
+                <div class="col-md-6">
+                    <label for="id_password" class="form-label">Password</label>
+                    <input type="password" name="password" id="id_password" class="form-control"
+                        value="{{ student_form.password.value|default:'' }}">
+                    <div class="text-danger">{{ student_form.password.errors }}</div>
+                </div>
+
+                <!-- Inter/Diploma Percentage -->
+                <div class="col-md-6">
+                    <label for="id_inter_diploma_percentage" class="form-label">Inter/Diploma Percentage</label>
+                    <input type="text" name="inter_diploma_percentage" id="id_inter_diploma_percentage"
+                        class="form-control" value="{{ profile_form.inter_diploma_percentage.value|default:'' }}">
+                    <div class="text-danger">{{ profile_form.inter_diploma_percentage.errors }}</div>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="col-md-6">
+                    <label for="id_phone_number" class="form-label">Phone Number</label>
+                    <input type="text" name="phone_number" id="id_phone_number" class="form-control"
+                        value="{{ profile_form.phone_number.value|default:'' }}">
+                    <div class="text-danger">{{ profile_form.phone_number.errors }}</div>
+                </div>
+
+                <!-- B.Tech CGPA -->
+                <div class="col-md-6">
+                    <label for="id_btech_cgpa" class="form-label">B.Tech CGPA</label>
+                    <input type="text" name="btech_cgpa" id="id_btech_cgpa" class="form-control"
+                        value="{{ profile_form.btech_cgpa.value|default:'' }}">
+                    <div class="text-danger">{{ profile_form.btech_cgpa.errors }}</div>
+                </div>
+
+                <!-- Resume (File Input) -->
+                <div class="col-md-6">
+                    <label for="id_resume" class="form-label">Resume</label>
+                    <input type="file" name="resume" id="id_resume" class="form-control">
+                    {% if profile_form.resume.errors %}
+                    <div class="text-danger">{{ profile_form.resume.errors }}</div>
+                    {% else %}
+                    <small class="text-muted">Please re-upload resume if form validation fails.</small>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-3 text-center">
+                <button type="submit" class="btn btn-primary">Add Student</button>
+                <a href="{% url 'department_students' %}" class="btn btn-secondary ms-2">Back to Student List</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

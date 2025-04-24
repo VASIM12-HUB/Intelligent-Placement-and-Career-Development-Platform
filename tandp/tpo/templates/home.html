@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Placement Record</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Correct Font Awesome 6 (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        .navbar { background-color: #2c3e50; }
+        .navbar-brand, .nav-link { color: #ecf0f1 !important; }
+        .stat-card:hover { transform: translateY(-10px); }
+    </style>
+
+    <style>
+        /* Global Styles */
+        body {
+            background-image: url('https://images.pexels.com/photos/7134994/pexels-photo-7134994.jpeg');
+            background-size: cover;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+        .body-overlay {
+            backdrop-filter: blur(8px); /* Adds frosted-glass effect */
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            border-radius: 15px;
+            min-height: 100vh;
+            width: 100%;
+        }
+        
+        .container-custom {
+            padding: 50px 15px;
+            margin-top: -18px;
+            
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: #2c3e50;
+            border-bottom: -5px solid #34495e;
+            padding: 3px; 
+        }
+
+        .navbar-brand, .nav-link {
+            color: #ecf0f1 !important;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #3498db;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .navbar-toggler-icon {
+            background-color: #ecf0f1;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            background-color: #8c8bd0;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.3s ease-in-out;
+            margin-bottom: 20px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .stat-card h2 {
+            color: white;
+            margin: 10px 0;
+        }
+
+        .stat-card p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Footer Styling */
+        .footer {
+            background-color: #34495e;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 12px 15px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 30px;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        /* Cards Layout */
+        .card-columns {
+            column-count: 2;
+            column-gap: 20px;
+        }
+
+        .academic-year-dropdown select {
+            width: 180px;
+            border-radius: 5px;
+            padding: 7px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .academic-year-dropdown button {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            padding: 7px 10px;
+            font-size: 16px;
+            border: none;
+        }
+
+        /* Modern chart styling */
+        canvas {
+            border-radius: 10px;
+            margin-top: -10px;
+        }
+
+        .content-section {
+            margin-top: 15px;
+            margin-bottom: -55px;
+        }
+
+        .content-section h4 {
+            margin-bottom: -8px;
+        }
+
+        .chart-legend li {
+            padding: 2px 0;
+        }
+        /* Set fixed height for both pie and bar chart containers */
+        .chart-container {
+            height: 380px; /* You can adjust this value */
+            padding: 10px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Decrease the size of the pie chart */
+        #companyChart {
+            width: 60% !important; /* Decrease the width of the pie chart */
+            height: 80% !important; /* Decrease the height of the pie chart */
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        #branchChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card {
+            border-radius: 15px;
+            border: 1px solid orange !important;
+            background-color: #ffffff;
+            height: 380px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar with Login Links -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Placement Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="loginDropdown">
+                            <li><a class="dropdown-item" href="{% url 'login_tpo' %}"><i class="fas fa-user-tie me-2"></i> TPO Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stulogin' %}"><i class="fas fa-user-graduate me-2"></i> Student Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'faculty_login' %}"><i class="fas fa-chalkboard-teacher me-2"></i> Faculty Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-user-shield me-2"></i> Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container container-custom">
+        <!-- Messages -->
+        
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Placement Record Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Placement Record for the Year {{ selected_year }}</h2>
+            <div class="academic-year-dropdown">
+                <form method="get" action="{% url 'home' %}" class="d-flex align-items-center">
+                    <select name="academic_year" class="form-select">
+                        <option value="" selected>Select Year</option>
+                        {% for year in academic_years %}
+                            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">View Placements</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row text-center mb-4">
+            <div class="col-md-4 d-flex">
+                <div class="stat-card w-100">
+                    <p>Total Placements</p>
+                    <h2>{{ total_placements }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex">
+                <div class="stat-card w-100">
+                    <p>Avg. Package</p>
+                    <h2>₹{{ avg_package }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex">
+                <div class="stat-card w-100">
+                    <p>Highest CTC</p>
+                    <h2>{{ highest_ctc }} LPA</h2>
+                    <p><strong>Company:</strong> {{ highest_ctc_company }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="content-section">
+            <div class="row">
+               <!-- Branch-wise Placements Section -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm p-3">
+                    <h4 class="text-center">Branch-wise Placements</h4>
+                    <div class="chart-container">
+                        <canvas id="branchChart"></canvas>
+                        <p id="branchChartMessage" class="text-center text-muted" style="display: none; font-size:18px;">
+                            No Branch-wise Placements for the academic year {{ selected_year }}.
+                        </p>
+                </div>
+            </div>
+            </div>
+
+            <!-- Company-wise Offers Section -->
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3">
+                <h4 class="text-center">Company-wise Offers</h4>
+                <div class="chart-container">
+                    <canvas id="companyChart"></canvas>
+                    <p id="companyChartMessage" class="text-center text-muted" style="display: none; font-size:18px;">
+                        No Company-wise Offers for the academic year {{ selected_year }}.
+                    </p>
+            </div>
+        </div>
+        </div>
+
+    </div>
+    </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; All Rights Reserved. Placement Portal 2025</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    let branchData = {{ branch_chart_data|safe }};
+    let companyData = {{ company_chart_data|safe }};
+
+    // 🌟 Branch-wise Chart Logic
+    if (branchData.length > 0 && branchData[0].branch !== "No Data") {
+        document.getElementById("branchChart").style.display = 'block';
+        document.getElementById("branchChartMessage").style.display = 'none';
+
+        let labels = [], placedData = [], totalStudentsPerBranch = [], notPlacedData = [];
+        branchData.forEach(item => {
+            let total = item.total_students ? Math.max(0, item.total_students) : 0;
+            let placed = item.count ? Math.max(0, item.count) : 0;
+            let notPlaced = Math.max(0, total - placed);
+
+            labels.push(item.branch);
+            totalStudentsPerBranch.push(total);
+            placedData.push(placed);
+            notPlacedData.push(notPlaced);
+        });
+
+        new Chart(document.getElementById("branchChart"), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Total Students",
+                        data: totalStudentsPerBranch,
+                        backgroundColor: 'rgba(201, 203, 207, 0.6)',
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: "Placed Students",
+                        data: placedData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: "Not Placed Students",
+                        data: notPlacedData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { display: false }  // 🚫 Removes horizontal grid lines
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { padding: 20 }
+                    }
+                },
+            }
+        });
+    } else {
+        document.getElementById("branchChart").style.display = 'none';
+        document.getElementById("branchChartMessage").style.display = 'block';
+    }
+
+    // 🌟 Company-wise Offers Chart Logic
+    if (companyData.length > 0 && companyData[0].company !== "No Data") {
+        document.getElementById("companyChart").style.display = 'block';
+        document.getElementById("companyChartMessage").style.display = 'none';
+
+        function generateColors(count) {
+            let colors = [];
+            for (let i = 0; i < count; i++) {
+                colors.push(`hsl(${Math.random() * 360}, 70%, 60%)`);
+            }
+            return colors;
+        }
+
+        let companyNames = companyData.map(item => item.company);
+        let companyCounts = companyData.map(item => item.count);
+        let companyColors = generateColors(companyData.length);
+
+        new Chart(document.getElementById("companyChart"), {
+            type: 'pie',
+            data: {
+                labels: companyNames,
+                datasets: [{
+                    data: companyCounts,
+                    backgroundColor: companyColors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' } },
+                cutoutPercentage: 0,
+                borderWidth: 0,
+                rotation: 0,
+            }
+        });
+    } else {
+        document.getElementById("companyChart").style.display = 'none';
+        document.getElementById("companyChartMessage").style.display = 'block';
+    }
+});
+
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

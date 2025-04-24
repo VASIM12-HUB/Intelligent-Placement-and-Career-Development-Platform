@@ -1,0 +1,233 @@
+{% extends 'faculty_dashboard.html' %}
+{% load custom_filters %}
+{% block content %}
+
+<style>
+    body {
+        background-image: url('https://images.pexels.com/photos/9175759/pexels-photo-9175759.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        margin-left: 15px;
+    }
+
+    .container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 0;
+    }
+
+    .table-responsive {
+        margin-top: 15px;
+    }
+
+    .alert {
+        margin-top: 20px;
+    }
+
+    .filter-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .filter-container select {
+        width: 150px;
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    .add-button-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Table header styles */
+    .table th {
+        background-color: #91adcb;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+    }
+
+    /* Table body styles */
+    .table td {
+        padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+        border: 1px solid #dee2e6;
+    }
+</style>
+
+<div class="add-button-container">
+    <h2 class="mb-0">Placed Students List</h2>
+</div>
+
+<!-- Filters Section -->
+<form method="GET">
+    <div class="filter-container">
+        <select name="company" class="form-select">
+            <option value="">Select Company</option>
+            {% for company in company_options %}
+            <option value="{{ company }}" {% if selected_company == company %}selected{% endif %}>{{ company }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="branch" class="form-select">
+            <option value="">Select Branch</option>
+            {% for branch in branch_options %}
+            <option value="{{ branch }}" {% if selected_branch == branch %}selected{% endif %}>{{ branch }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="year" class="form-select">
+            <option value="">Select Year</option>
+            {% for year in year_options %}
+            <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="academic_year" class="form-select">
+            <option value="">Select Academic Year</option>
+            {% for academic_year in academic_year_options %}
+            <option value="{{ academic_year }}" {% if selected_academic_year == academic_year %}selected{% endif %}>
+                {{ academic_year }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{% url 'placed_students' %}" class="btn btn-secondary">Reset Filters</a>
+    </div>
+</form>
+
+<div class="container mt-5">
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'error' %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'warning' %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'info' %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% else %}
+        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="select-all" onclick="toggleSelectAll()">
+                    </th>
+                    <th>Roll Number</th>
+                    <th>Full Name</th>
+                    <th>Branch</th>
+                    <th>Year of Study</th>
+                    <th>Academic Year</th>
+                    <th>Company Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in placed_students %}
+                <tr id="student_{{ student.rollno }}">
+                    <td>
+                        <input type="checkbox" name="selected_students_checkbox" value="{{ student.rollno }}"
+                            class="student-checkbox">
+                    </td>
+                    <td>{{ student.rollno }}</td>
+                    <td>{{ student.full_name }}</td>
+                    <td>{{ student.department }}</td>
+                    <td>{{ student.year_of_study }}</td>
+                    <td>{{ student.academic_year }}</td>
+                    <td>{{ student.company_name }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No students found with the selected filters.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- Export Button (Without URL Selection) -->
+        <form id="export-form" method="POST" action="{% url 'excel' %}" class="d-inline-block">
+            {% csrf_token %}
+            <input type="hidden" name="selected_students" id="selected-students-export">
+            <button type="submit" class="btn btn-success">Export to Excel</button>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript to Handle Checkbox Selection -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectAllCheckbox = document.getElementById("select-all");
+        const studentCheckboxes = document.querySelectorAll(".student-checkbox");
+        const exportForm = document.getElementById("export-form");
+        const selectedStudentsInput = document.getElementById("selected-students-export");
+
+        // Select All Checkbox Functionality
+        selectAllCheckbox.addEventListener("change", function () {
+            studentCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+
+        // Ensure Individual Selections Are Counted Properly
+        studentCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener("change", function () {
+                if (!this.checked) {
+                    selectAllCheckbox.checked = false;
+                } else if ([...studentCheckboxes].every(cb => cb.checked)) {
+                    selectAllCheckbox.checked = true;
+                }
+            });
+        });
+
+        // Handle Export Form Submission
+        exportForm.addEventListener("submit", function (event) {
+            const selectedRollNos = new Set([...studentCheckboxes]
+                .filter(cb => cb.checked)
+                .map(cb => cb.value));
+
+            if (selectedRollNos.size === 0) {
+                alert("Please select at least one student to export.");
+                event.preventDefault();
+            } else {
+                selectedStudentsInput.value = Array.from(selectedRollNos).join(",");
+            }
+        });
+    });
+
+</script>
+{% endblock %}

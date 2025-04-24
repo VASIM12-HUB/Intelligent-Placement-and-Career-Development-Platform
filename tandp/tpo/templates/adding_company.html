@@ -1,0 +1,109 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Add New Company{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://t3.ftcdn.net/jpg/06/21/89/96/360_F_621899617_GwV90JopWBwDzL4jswPu6ga9lUApRoFK.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: rgba(255, 255, 255, 0.5);
+        background-blend-mode: overlay;
+    }
+
+    .add-company-container {
+        margin: 50px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+        max-width: 880px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 36px;
+        color: green;
+    }
+
+    input,
+    textarea,
+    button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: green;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: darkgreen;
+    }
+</style>
+
+
+<div class="add-company-container">
+    <h1>Add New Company</h1>
+    <form method="post">
+        {% csrf_token %}
+
+        {% if messages %}
+        <div>
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% elif message.tags == 'warning' %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% elif message.tags == 'info' %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% else %}
+            <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <label for="company_name">Company Name:</label>
+        <input type="text" name="company_name" required>
+
+        <label for="company_info">Company Info:</label>
+        <textarea name="company_info" rows="4" required></textarea>
+
+        <h3>Interview Rounds:</h3>
+        {% for i in round_numbers %}
+        <label for="round_{{ i }}">Round {{ i }}:</label>
+        <input type="text" name="round_{{ i }}" placeholder="Enter details for Round {{ i }}">
+        {% endfor %}
+
+        <button type="submit">Add Company</button>
+        <a href="{% url 'interview_process1' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

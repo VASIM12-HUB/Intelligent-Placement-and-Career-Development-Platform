@@ -1,0 +1,21 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Company List - TPO Dashboard{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-center">Companies List</h2>
+        <form method="GET" action="{% url 'company_detail' company.id %}">
+            <div class="mb-3">
+                <label for="company" class="form-label">Select Company</label>
+                <select name="company" class="form-control">
+                    <option value="">--Select a Company--</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}">{{ company.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">View Company</button>
+        </form>
+    </div>
+{% endblock %}

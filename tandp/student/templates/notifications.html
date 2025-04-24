@@ -1,0 +1,162 @@
+{% extends 'stu_dashboard.html' %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    .notification-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 25px;
+        transition: transform 0.2s;
+    }
+
+    .notification-card:hover {
+        transform: scale(1.02);
+    }
+
+    .status-tag {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .applied { background-color: #d4edda; color: #155724; }
+
+    .btn-custom {
+        width: 100%;
+        border-radius: 25px;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+
+    .company-header {
+        background: linear-gradient(140deg, #fbc2eb,#50c9c3, #a6c1ee,#4a90e2);
+        border-radius: 15px 15px 0 0;
+        padding: 15px;
+        color: white;
+        text-align: center;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">📩 Your Notifications</h2>
+    {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+    {% if notifications %}
+        <div class="row justify-content-center">
+            {% for notification in notifications %}
+                <div class="col-md-6">
+                    <div class="notification-card border">
+                        <div class="company-header">
+                            <h4>{{ notification.company.name }} <small>({{ notification.company.job_role }})</small></h4>
+                            <p>📅 Academic Year: {{ notification.company.academic_year }}</p>
+                        </div>
+
+                        <div class="p-3">
+                            <p><strong>🏢 Description:</strong> {{ notification.company.address|default:"N/A" }}</p>
+                            <p><strong>🎯 Eligibility Criteria:</strong> {{ notification.company.eligibility_criteria }}</p>
+                            <p><strong>💼 Package:</strong> ₹{{ notification.company.package }} LPA</p>
+                            <p><strong>📝 Message:</strong> {{ notification.message }}</p>
+                            <p><strong>📌 Status:</strong> ✅ <span class="status-tag applied">Seen</span></p>
+                        
+                            {% with notification.student.eligibility_set.all as eligibilities %}
+                                {% for eligibility in eligibilities %}
+                                    {% if eligibility.company == notification.company %}
+                                        <p>
+                                            <strong>⚡ Eligibility:</strong>
+                                            {% if eligibility.application_status == "ELIGIBLE_APPLIED" %}
+                                                <span class="status-tag applied">✅ Applied</span>
+                                            {% elif eligibility.application_status == "ELIGIBLE_NOT_APPLIED" %}
+                                                <span class="status-tag not-applied">❌ Not Applied</span>
+                                            {% elif eligibility.application_status == "PLACED" %}
+                                                <span class="status-tag applied">🎉 Placed</span>
+                                            {% elif eligibility.application_status == "PROCESSING" %}
+                                                <span class="status-tag bg-warning text-dark">⏳ Processing</span>
+                                            {% elif eligibility.application_status == "REJECTED" %}
+                                                <span class="status-tag bg-danger text-white">🚫 Rejected</span>
+                                            {% else %}
+                                                <span class="status-tag not-eligible">🚫 Not Eligible</span>
+                                            {% endif %}
+                                        </p>
+
+                                        <p>
+                                            <strong>⚠️ Note</strong> 
+                                            <span style="color: red;"><strong>Important:</strong></span> 
+                                            Before clicking the button, ensure that you have actually applied to the drive.  
+                                            Once clicked, the action cannot be undone or edited.  
+                                            If you clicked the button by mistake or without proper consent, you must consult the <strong>TPO</strong> or your <strong>Department Coordinator</strong> for further assistance.
+                                        </p>
+
+                                        <p>
+                                            <strong>🚫 Note:</strong> 
+                                            <span style="color: red;"></span> 
+                                            If you are not interested in applying, simply leave the button unclicked and take no action.
+                                        </p>
+                                        
+                                        
+                        
+                                        {% if eligibility.application_status == "ELIGIBLE_NOT_APPLIED" %}
+                                        <!-- Application Status Form -->
+                                    
+                                        <form method="post" action="{% url 'update_application_status' eligibility.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" name="status" value="ELIGIBLE_APPLIED"
+                                                class="btn btn-success btn-custom"
+                                                {% if eligibility.application_status == "ELIGIBLE_APPLIED" %}disabled{% endif %}>
+                                                ✅ Mark as Applied
+                                            </button>
+                                        </form>
+                                        
+                                        {% endif %}
+                                                                        
+                                    {% endif %}
+                                {% empty %}
+                                    <p><strong>⚡ Eligibility:</strong> ❌ <span class="status-tag not-eligible">Not Available</span></p>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                    
+                            
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted">🚫 No notifications at the moment.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

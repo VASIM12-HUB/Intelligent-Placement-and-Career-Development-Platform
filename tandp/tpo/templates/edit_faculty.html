@@ -1,0 +1,146 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Edit Faculty - TPO Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-size: 400% 400%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-container {
+        max-width: 800px;
+        background-color: rgba(255, 255, 255, 0.3);
+        /* Semi-transparent */
+        backdrop-filter: blur(10px);
+        /* Frosted glass effect */
+        padding: 20px;
+        border-radius: 15px;
+        margin: 10px auto;
+        /* Reduced from 20px to 10px */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+        margin-top: 10px !important;
+        /* Force top margin to 10px */
+        padding-top: 0px !important;
+        /* Ensure no extra padding */
+    }
+
+    .form-container .form-control {
+        border-radius: 10px;
+    }
+
+    .form-container .btn {
+        width: 20%;
+        padding: 8px;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .profile-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            width: 90%;
+        }
+    }
+</style>
+
+<div class="container">
+    <h2 class="text-center mb-4">Edit Faculty Details</h2>
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ faculty.full_name }}"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ faculty.custom_user.email }}"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username"
+                    value="{{ faculty.custom_user.username }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                    placeholder="Leave blank to keep current password"
+                    pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                    title="If changing, password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.">
+            </div>            
+            <div class="mb-3">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" class="form-control" id="department" name="department"
+                    value="{{ faculty.department }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone_number" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="phone_number" name="phone_number"
+                    value="{{ faculty.phone_number }}">
+            </div>
+            <div class="mb-3">
+                <label for="profile_picture" class="form-label">Profile Picture</label>
+                <input type="file" class="form-control" id="profile_picture" name="profile_picture">
+                {% if faculty.profile_picture %}
+                <p>Current Picture:
+                    <img src="{{ faculty.profile_picture.url }}" alt="Profile Picture" class="profile-img">
+                </p>
+                {% endif %}
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'view_faculty' %}" class="btn btn-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

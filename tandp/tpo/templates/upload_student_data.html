@@ -1,0 +1,224 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://images.pexels.com/photos/6985193/pexels-photo-6985193.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+</style>
+<div class="container mt-5">
+    <h2 class="text-center">Upload Student Data for {{ company.name }}</h2>
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'error' %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'warning' %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'info' %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% else %}
+        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h4><i class="fas fa-upload"></i> Upload Excel File</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="excel_file">Choose Excel File:</label>
+                    <input type="file" name="excel_file" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Filters Section -->
+    <div class="mt-5">
+        <h4><i class="fas fa-search"></i> Filter Students by Round and Status</h4>
+        <form method="GET" action="">
+            <div class="form-row">
+                <div class="d-flex flex-wrap mb-3">
+                    <!-- Round Filter -->
+                    <div class="form-group col-md-2">
+                        <label for="round_filter">Select Round:</label>
+                        <select name="round_filter" class="form-control" id="round_filter">
+                            <option value="">Select Round</option>
+                            <option value="round_1">Round 1</option>
+                            <option value="round_2">Round 2</option>
+                            <option value="round_3">Round 3</option>
+                            <option value="round_4">Round 4</option>
+                            <option value="round_5">Round 5</option>
+                            <option value="round_6">Round 6</option>
+                        </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="form-group col-md-3.5">
+                        <label for="status_filter">Enter Status (e.g., Qualified, Not Qualified):</label>
+                        <input type="text" name="status_filter" class="form-control" placeholder="Enter Status" />
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if students %}
+    <p>Number of students: {{ students|length }}</p>
+
+    <div class="card mt-5">
+        <div class="card-header d-flex justify-content-between">
+            <h4><i class="fas fa-check-circle"></i> Updated Student Records for {{ company.name }}</h4>
+
+            <!-- Round Selection for Sending Notifications -->
+            <div class="form-group">
+                <label for="send_round">Select Round for Notification:</label>
+                <select name="send_round" class="form-control" id="send_round">
+                    <option value="">Select Round</option>
+                    <option value="round_1">Round 1</option>
+                    <option value="round_2">Round 2</option>
+                    <option value="round_3">Round 3</option>
+                    <option value="round_4">Round 4</option>
+                    <option value="round_5">Round 5</option>
+                    <option value="round_6">Round 6</option>
+                </select>
+            </div>
+
+            <button class="btn btn-success" onclick="sendSelectedNotifications()">
+                <i class="fas fa-envelope"></i> Send to Selected
+            </button>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th><input type="checkbox" id="select_all"></th>
+                        <th>Roll Number</th>
+                        <th>Full Name</th>
+                        <th>Personal Email</th>
+                        <th>Branch</th>
+                        <th>Round 1</th>
+                        <th>Round 2</th>
+                        <th>Round 3</th>
+                        <th>Round 4</th>
+                        <th>Round 5</th>
+                        <th>Round 6</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><input type="checkbox" class="student-checkbox" value="{{ student.roll_number }}"></td>
+                        <td>{{ student.roll_number }}</td>
+                        <td>{{ student.full_name }}</td>
+                        <td>{{ student.personal_email }}</td>
+                        <td>{{ student.branch }}</td>
+                        <td>{{ student.round_1 }}</td>
+                        <td>{{ student.round_2 }}</td>
+                        <td>{{ student.round_3 }}</td>
+                        <td>{{ student.round_4 }}</td>
+                        <td>{{ student.round_5 }}</td>
+                        <td>{{ student.round_6 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <p>No students found for the selected filters.</p>
+    {% endif %}
+
+    <a href="{% url 'select_company_and_upload' %}">
+        <button class="btn btn-secondary mt-4">Back to Select Company</button>
+    </a>
+</div>
+
+<script>
+    document.getElementById('select_all').addEventListener('click', function () {
+        let checkboxes = document.querySelectorAll('.student-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+
+    function sendSelectedNotifications() {
+        let selectedStudents = [];
+        let checkboxes = document.querySelectorAll('.student-checkbox:checked');
+        let selectedRound = document.getElementById('send_round').value; // Get selected round
+
+        checkboxes.forEach(checkbox => {
+            selectedStudents.push(checkbox.value);
+        });
+
+        if (!selectedRound) {
+            alert("Please select a round to send notifications.");
+            return;
+        }
+
+        if (selectedStudents.length === 0) {
+            alert('Please select at least one student.');
+            return;
+        }
+
+        fetch(`/send_bulk_notifications/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                student_ids: selectedStudents,
+                company_id: '{{ company.id|default:"" }}',
+                current_round: selectedRound
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Backend Error:", data.error);
+                    alert(`Error: ${data.error}`);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert("An unexpected error occurred. Check console logs.");
+            });
+    }
+
+</script>
+
+{% endblock %}

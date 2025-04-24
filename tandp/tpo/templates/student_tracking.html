@@ -1,0 +1,269 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<style>
+/* Apply the background image */
+body {
+    background-image: url('https://images.pexels.com/photos/7134988/pexels-photo-7134988.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    margin: 0;
+    margin-left: 15px;
+}
+
+/* Container with semi-transparent background */
+.container {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 3%;
+}
+
+/* Spacing for buttons and table */
+.add-button-container {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+.table-responsive {
+    margin-top: 15px;
+}
+
+/* Table styles */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.table th {
+    background-color: #91adcb;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+}
+.table td {
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+}
+.table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Alerts */
+.alert {
+    margin-top: 20px;
+}
+.small-message-container {
+    max-width: 300px;
+}
+td{
+    white-space: nowrap;
+}
+</style>
+
+<h1 class="mb-4">Student Training</h1>
+{% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+<!-- Filters (GET Form) -->
+<div class="filter-container">
+    <form method="GET">
+        <div class="row d-flex flex-wrap align-items-end">
+            <!-- Roll Number -->
+            <div class="col-md-2">
+                <label for="rollno">Roll Number</label>
+                <input type="text" class="form-control" id="rollno" name="rollno" value="{{ request.GET.rollno }}">
+            </div>
+            <!-- Branch -->
+            <div class="col-md-2">
+                <label for="branch">Branch</label>
+                <select class="form-control" id="branch" name="branch">
+                    <option value="">All</option>
+                    {% for branch in branches %}
+                        <option value="{{ branch }}" {% if request.GET.branch == branch %}selected{% endif %}>{{ branch }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Year of Study -->
+            <div class="col-md-2">
+                <label for="year_of_study">Year of Study</label>
+                <select class="form-control" id="year_of_study" name="year_of_study">
+                    <option value="">All</option>
+                    {% for year in years_of_study %}
+                        <option value="{{ year }}" {% if request.GET.year_of_study == year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Gender -->
+            <div class="col-md-2">
+                <label for="gender">Gender</label>
+                <select class="form-control" id="gender" name="gender">
+                    <option value="">All</option>
+                    {% for value, label in genders %}
+                        <option value="{{ value }}" {% if request.GET.gender == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- 10th Percentage (Min) -->
+            <div class="col-md-2">
+                <label for="ssc_min">10th % (Min)</label>
+                <input type="number" step="0.01" class="form-control" id="ssc_min" name="ssc_min" value="{{ request.GET.ssc_min }}">
+            </div>
+            <!-- 10th Percentage (Max) -->
+            <div class="col-md-2">
+                <label for="ssc_max">10th % (Max)</label>
+                <input type="number" step="0.01" class="form-control" id="ssc_max" name="ssc_max" value="{{ request.GET.ssc_max }}">
+            </div>
+            <!-- Inter/Diploma Percentage (Min) -->
+            <div class="col-md-2">
+                <label for="inter_min">Inter/Diploma % (Min)</label>
+                <input type="number" step="0.01" class="form-control" id="inter_min" name="inter_min" value="{{ request.GET.inter_min }}">
+            </div>
+            <!-- Inter/Diploma Percentage (Max) -->
+            <div class="col-md-2">
+                <label for="inter_max">Inter/Diploma % (Max)</label>
+                <input type="number" step="0.01" class="form-control" id="inter_max" name="inter_max" value="{{ request.GET.inter_max }}">
+            </div>
+            <!-- B.Tech Percentage (Min) -->
+            <div class="col-md-2">
+                <label for="btech_min">B.Tech % (Min)</label>
+                <input type="number" step="0.01" class="form-control" id="btech_min" name="btech_min" value="{{ request.GET.btech_min }}">
+            </div>
+            <!-- B.Tech Percentage (Max) -->
+            <div class="col-md-2">
+                <label for="btech_max">B.Tech % (Max)</label>
+                <input type="number" step="0.01" class="form-control" id="btech_max" name="btech_max" value="{{ request.GET.btech_max }}">
+            </div>
+            <!-- Buttons -->
+            <div class="col-md-12 mt-3">
+                <button type="submit" name="apply_filters" class="btn btn-primary">Apply Filters</button>
+                <a href="{% url 'student_tracking' %}" class="btn btn-secondary">Reset Filters</a>
+                <a href="{% url 'training_upload' %}" class="btn btn-warning">Upload Excel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Export Form (POST to separate view) -->
+<div class="container mt-5">
+        <div class="table-responsive mt-2">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all"></th>
+                        <th>Roll Number</th>
+                        <th>Full Name</th>
+                        <th>College Email</th>
+                        <th>Personal Email</th>
+                        <th>Branch</th>
+                        <th>10th Percentage</th>
+                        <th>Inter/Diploma Percentage</th>
+                        <th>B.Tech Percentage</th>
+                        <th>Training Program</th>
+                        <th>Attendance (%)</th>
+                        <th>Score Secured</th>
+                        <th>Max Score</th>
+                        <th>Placement Status</th>
+                        <th>Company Name</th>
+                        <th>Year of Study</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in student_data %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selected_students" value="{{ student.rollno }}">
+                            </td>
+                            <td>{{ student.rollno }}</td>
+                            <td>{{ student.full_name }}</td>
+                            <td>{{ student.college_email }}</td>
+                            <td>{{ student.personal_email }}</td>
+                            <td>{{ student.branch }}</td>
+                            <td>{{ student.ssc_percentage }}</td>
+                            <td>{{ student.inter_diploma_percentage }}</td>
+                            <td>{{ student.btech_percentage }}</td>
+                            <td>{{ student.training_program }}</td>
+                            <td>{{ student.attendance_percentage }}</td>
+                            <td>{{ student.score_secured }}</td>
+                            <td>{{ student.max_score }}</td>
+                            <td>{{ student.placement_status }}</td>
+                            <td>{{ student.company_name }}</td>
+                            <td>{{ student.year_of_study }}</td>
+                            <td>{{ student.gender }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <form id="export-form" method="POST" action="{% url 'training_excel' %}">
+            {% csrf_token %}
+            <input type="hidden" id="export-student-ids" name="export_student_ids">
+            <!-- Your table with checkboxes -->
+            <button type="submit" name="export" class="btn btn-success">
+                Export Selected to Excel
+            </button>
+        </form>               
+</div>
+
+<script>
+    // "Select All" functionality
+    document.getElementById("select-all").addEventListener("click", function () {
+        let checkboxes = document.querySelectorAll('input[name="selected_students"]');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+
+    // Before submitting export form, gather selected roll numbers
+    document.getElementById("export-form").addEventListener("submit", function (event) {
+        event.preventDefault();  // Prevent immediate submission
+
+        let selectedValues = [];
+        document.querySelectorAll('input[name="selected_students"]:checked').forEach(checkbox => {
+            selectedValues.push(checkbox.value);
+        });
+
+        console.log("Selected roll numbers: ", selectedValues);
+
+        if (selectedValues.length === 0) {
+            alert("No students selected!");
+            return;
+        }
+
+        // Set the hidden field with comma-separated roll numbers
+        document.getElementById("export-student-ids").value = selectedValues.join(",");
+        // Submit the form programmatically
+        this.submit();
+    });
+</script>
+{% endblock %}

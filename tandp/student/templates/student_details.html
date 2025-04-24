@@ -1,0 +1,112 @@
+{% extends 'stu_dashboard.html' %}
+{% load static %}
+{% block title %}Student Profile{% endblock %}
+
+{% block content %}
+<style>/* Profile Card for Sidebar */
+    .profile-card {
+        background: url("{% static 'images/image.png' %}") no-repeat center center;
+        background-size: cover;
+        border-radius: 20px;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        opacity: 0.85;
+        background-color: rgba(0, 0, 0, 0.4);
+        margin-bottom: 15px;
+        margin-left: 30px;
+        margin-top: 50px;
+
+    }
+
+    .profile-card img {
+        border-radius: 50%;
+        max-width: 150px;
+    }
+</style>
+    <!-- Profile section visible only on the dashboard page -->
+    <div class="profile-card">
+        {% if messages %}
+    <div>
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'error' %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'warning' %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% elif message.tags == 'info' %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% else %}
+        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+        <!-- Profile Picture -->
+        <div class="text-center mb-4">
+            {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <img src="https://cdn-icons-png.flaticon.com/512/4042/4042356.png" alt="Default Profile Picture">
+            {% endif %}
+        </div>
+
+        <!-- Student Information -->
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Name:</strong> {{ profile.student.full_name }}</p>
+                <p><strong>Roll Number:</strong> {{ profile.student.rollno }}</p>
+                <p><strong>Gender:</strong> 
+                    {% if profile.gender == "F" %}
+                        Female
+                    {% elif profile.gender == "M" %}
+                        Male
+                    {% elif profile.gender == "O" %}
+                        Others
+                    {% else %}
+                        Not Specified
+                    {% endif %}
+                </p>
+                <p><strong>College Email:</strong> {{ profile.college_email }}</p>
+                <p><strong>Personal Email:</strong> {{ profile.personal_email|default:"Not Provided" }}</p>
+                <p><strong>Phone Number:</strong> {{ profile.phone_number }}</p>
+                <p><strong>Academic Year:</strong> {{ profile.academic_year }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>SSC Percentage:</strong> {{ profile.ssc_percentage }}</p>
+                <p><strong>Inter/Diploma Percentage:</strong> {{ profile.inter_diploma_percentage }}</p>
+                <p><strong>B.Tech CGPA:</strong> {{ profile.btech_cgpa }}</p>
+                <p><strong>Department:</strong> {{ profile.department }}</p>
+                <p><strong>Year of Study:</strong> {{ profile.year_of_study }}</p>
+                <p><strong>Resume:</strong> 
+                    {% if profile.resume %}
+                        <a href="{{ profile.resume.url }}" target="_blank">View</a>
+                    {% else %}
+                        Not Uploaded
+                    {% endif %}
+                </p>
+                <p><strong>Passed Out Year</strong> {{ profile.passed_out_year }}</p>
+            </div>
+        </div>
+
+        <!-- Edit Button -->
+        <div class="text-center">
+            <a href="{% url 'profile' %}" class="btn btn-primary mt-3">Edit Profile</a>
+        </div>
+    </div>
+{% endblock %}

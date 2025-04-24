@@ -1,0 +1,139 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Edit Company{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://t3.ftcdn.net/jpg/06/21/89/96/360_F_621899617_GwV90JopWBwDzL4jswPu6ga9lUApRoFK.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: rgba(255, 255, 255, 0.5);
+        background-blend-mode: overlay;
+    }
+
+    .edit-company-container {
+        margin: 50px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+        max-width: 880px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 36px;
+        color: green;
+    }
+
+    input, textarea, select, button {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        display: block;
+    }
+
+    button {
+        background-color: green;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background-color: darkgreen;
+    }
+
+    /* Custom styling for the 'Load Company Details' button */
+    .load-button {
+        width: auto; /* Make the button smaller */
+        padding: 8px 16px; /* Adjust padding */
+        margin-top: 10px; /* Adjust margin */
+        margin-bottom: 20px; /* Adjust margin */
+    }
+</style>
+
+<div class="edit-company-container">
+    <h1>Edit Company</h1>
+
+    <form method="get">
+        {% csrf_token %}
+
+
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <label for="company_name">Select Company:</label>
+        <select name="company_name" required>
+            <option value="">-- Select Company --</option>
+            {% for company in company_names %}
+                <option value="{{ company }}" {% if company == selected_company %}selected{% endif %}>
+                    {{ company }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="load-button">Load Company Details</button>
+    </form>
+
+    {% if selected_company %}
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Add hidden field for company name -->
+        <input type="hidden" name="company_name" value="{{ selected_company }}">
+    
+        <label for="company_info">Company Info:</label>
+        <textarea name="company_info" rows="4" required>{{ company_info }}</textarea>
+    
+        <h3>Interview Rounds:</h3>
+        {% for round_name, round_detail in rounds.items %}
+            <label for="round_{{ forloop.counter }}">{{ round_name }}:</label>
+            <input type="text" name="round_{{ forloop.counter }}" value="{{ round_detail }}">
+        {% endfor %}
+    
+        <button type="submit">Save Changes</button>
+        <a href="{% url 'interview_process1' %}" class="btn btn-secondary">Cancel</a>
+    </form>    
+    
+    {% endif %}
+</div>
+
+{% endblock %}

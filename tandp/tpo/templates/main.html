@@ -1,0 +1,104 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Messages -->
+
+{% if messages %}
+<div>
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'error' %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'warning' %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'info' %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+    <div class="container">
+        <h2 class="text-center mt-4">Placement Statistics</h2>
+
+        <!-- Placement Table -->
+        <table class="table table-bordered mt-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>Year</th>
+                    <th>Students Placed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for year, count in placement_stats.items %}
+                <tr>
+                    <td>{{ year }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2" class="text-center">No placement data available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Placement Chart -->
+        <div class="mt-4" style="height: 400px; width: 700px;">
+            <canvas id="placementChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById('placementChart').getContext('2d');
+            var placementData = {
+                labels: [{% for year in placement_stats.keys %}"{{ year }}",{% endfor %}],
+                datasets: [{
+                    label: 'Students Placed',
+                    data: [{% for count in placement_stats.values %}{{ count }}, {% endfor %}],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    barThickness: 40,  // Explicit bar width
+                    maxBarThickness: 50 // Ensure bars don’t get too thick
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: placementData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

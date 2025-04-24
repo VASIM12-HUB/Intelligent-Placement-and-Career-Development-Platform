@@ -1,0 +1,27 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+<style>
+  .upload-container {
+      background-color: rgba(193, 224, 180, 0.6);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      width: 1060px;
+      margin: 50px auto;  /* centers the container horizontally */
+  }
+</style>
+<div class="upload-container">
+  <h1 class="mb-4">Upload Training Data</h1>
+
+  <!-- Upload Form -->
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label>Upload Excel File</label>
+      <input type="file" name="excel_file" accept=".xlsx,.xls" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+    <a href="{% url 'student_tracking' %}" class="btn btn-secondary">Back to Tracking</a>
+  </form>
+</div>
+{% endblock %}

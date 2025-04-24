@@ -1,0 +1,221 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <style>
+        body {
+            background-image: url('https://t3.ftcdn.net/jpg/06/21/89/96/360_F_621899617_GwV90JopWBwDzL4jswPu6ga9lUApRoFK.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.5);
+            background-blend-mode: overlay;
+            padding: 30px;
+        }
+
+        .main {
+            max-width: 880px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 30px;
+            color: green;
+            margin-bottom: 20px;
+        }
+
+        h2, h3 {
+            font-size: 20px;
+            color: black;
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        /* Flex container for title and buttons */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header-container h1 {
+            font-size: 30px;
+            color: green;
+            margin: 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 20%;
+            padding: 9px;
+            font-size: 16px;
+            background-color: green;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .images-grid img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        hr {
+            border: 1px solid green;
+            margin: 20px 0;
+        }
+
+        .rounds-list {
+            margin-top: 20px;
+            padding-left: 20px; 
+            text-align: left;
+            font-family:'Times New Roman', Times, serif;
+        }
+
+        .rounds-list li {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .rounds-list li span {
+            font-weight: bold;
+            color: red;
+        }
+        .button-container a {
+            background-color: green;
+            color: white;
+            padding: 6px 12px;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .button-container a.edit-btn {
+            background-color: blue;
+        }
+        .button-container a:hover {
+            opacity: 0.8;
+        }
+
+    </style>
+
+    <div class="main">
+        <div class="header-container">
+            <h1>Recruitment Process</h1>
+            <div class="button-container">
+                <a href="{% url 'adding_company' %}">Add New Company</a>
+                <a href="{% url 'edit_company' %}" class="edit-btn">Edit Company</a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Dropdown to select company -->
+        <form method="get">
+            <select name="company_name">
+                <option value="">Select Company</option>
+                {% for company in company_names %}
+                    <option value="{{ company }}" {% if company == company_name %}selected{% endif %}>{{ company }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+
+        {% if company_name %}
+
+            <!-- Company Images -->
+            <h3>Company Images</h3>
+            <div class="images-grid">
+                {% for image in images %}
+                    <img src="{{ image }}" alt="Company Image">
+                {% endfor %}
+            </div>
+
+            <hr>
+
+            <!-- About the Company -->
+            <h2>About {{ company_name }}</h2>
+            <p>{{ info }}</p>
+
+            <hr>
+
+            <!-- Display Available Rounds -->
+            <h3>Interview Rounds</h3>
+            <ul class="rounds-list">
+                {% for round_name, round_info in rounds.items %}
+                    <li><span>{{ round_name }}:</span> {{ round_info }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

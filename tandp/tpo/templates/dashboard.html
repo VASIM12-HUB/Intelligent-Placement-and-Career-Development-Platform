@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPO Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            background-image: url('https://images.pexels.com/photos/7134988/pexels-photo-7134988.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+        }
+
+        /* Sidebar container with fixed position */
+        .sidebar-container {
+            background: linear-gradient(140deg, #c2eafb, #b2eea6, #ae9aff, #faefc4);
+            background-size: cover;
+            padding: 18px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+            width: 280px;
+            color: #333;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-container.collapsed {
+            transform: translateX(-250px);
+            width: 60px;
+        }
+
+        .sidebar-container h4 {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-container.collapsed h4 {
+            opacity: 0;
+        }
+
+        .sidebar-nav {
+            background-color: #f7f7f7;
+            padding: 12px;
+            text-align: left;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 78%;
+        }
+
+        .sidebar-container a {
+            color: #333;
+            padding: 10px 20px;
+            display: block;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .sidebar-container a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-container.collapsed a {
+            padding: 10px;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .sidebar-container.collapsed a span {
+            display: none;
+        }
+
+        .sidebar-container a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+
+        .active {
+            background-color: #b2cfdb; /* Highlight with blue */
+            color: white ; /* Make text white for contrast */
+        }
+         /* Content area to the right of sidebar */
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+    }
+    .sidebar-container.collapsed+.content {
+            margin-left: 60px;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            left: 245px;
+            top: 20px;
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-container.collapsed+.content .sidebar-toggle {
+            left: 10px;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-container.collapsed .toggle-icon {
+            transform: rotate(180deg);
+        }
+    @media (max-width: 768px) {
+        .sidebar-container {
+            position: static;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: none;
+            height: auto;
+        }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-toggle">
+        <i class="fas fa-chevron-left toggle-icon"></i>
+    </div>
+    <!-- Sidebar container -->
+    <div class="sidebar-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar-nav">
+            <ul class="list-unstyled">
+                <h4 style="color: #333; font-size: 18px; margin-top: 12px; margin-bottom: 3px;">TPO Dashboard</h4>
+                <li><a href="{% url 'view_faculty' %}" class="text-dark {% if request.resolver_match.url_name == 'view_faculty' %}active{% endif %}"><i class="fas fa-chalkboard-teacher"></i> Faculty</a></li>
+                <li><a href="{% url 'view_students' %}" class="text-dark {% if request.resolver_match.url_name == 'view_students' %}active{% endif %}"><i class="fas fa-users"></i> Students</a></li>               
+                <li><a href="{% url 'add_company' %}" class="text-dark {% if request.resolver_match.url_name == 'add_company' %}active{% endif %}"><i class="fas fa-plus-circle"></i> Drive Details</a></li>
+                <li>
+                    <a href="{% url 'select_company_and_upload' %}" 
+                       class="text-dark {% if request.resolver_match.url_name == 'select_company_and_upload' %}active{% endif %}">
+                        <i class="fas fa-trophy"></i> Eligibile Rounds Data
+                    </a>
+                </li> 
+                <li>
+                    <a href="{% url 'interview_process1' %}" class="{% if request.resolver_match.url_name == 'interview_process1' %}active{% endif %} text-dark">
+                        <i class="fas fa-calendar-check mr-2"></i> Company Process
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'view_offer_letters' %}" 
+                       class="{% if request.resolver_match.url_name == 'view_offer_letters' %}active{% endif %}">
+                        <i class="fas fa-file-signature mr-2"></i> View Offer Letters
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_tracking' %}" 
+                       class="{% if request.resolver_match.url_name == 'student_tracking' %}active{% endif %}">
+                        <i class="fas fa-chart-line mr-2"></i> Student Training
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'training_upload' %}" 
+                       class="{% if request.resolver_match.url_name == 'training_upload' %}active{% endif %}">
+                        <i class="fas fa-upload mr-2"></i> Upload Training Data
+                    </a>
+                </li>                   
+                <li>
+                    <a href="{% url 'logout' %}" class="text-dark logout-link">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>                
+            </ul>
+        </div>
+    </div>
+
+     <!-- Main Content Area -->
+     <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.querySelector('.sidebar-container');
+            const toggleBtn = document.querySelector('.sidebar-toggle');
+            const toggleIcon = document.querySelector('.toggle-icon');
+
+            // Check sidebar state from localStorage
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                toggleIcon.style.transform = 'rotate(180deg)';
+            }
+
+            toggleBtn.addEventListener('click', function () {
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                toggleIcon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<style>
+  /* Set background image */
+  body {
+      background-image: url('https://images.pexels.com/photos/8749117/pexels-photo-8749117.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #080707; /* Text color */
+      margin-left: 15px;
+  }
+
+  /* Container for the content */
+  .container {
+      background-color: rgba(180, 217, 224, 0.6); /* Semi-transparent black background */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      width: 1060px;
+  }
+
+  /* Header Styles */
+  h2, h3 {
+      color: #3a3939;
+      font-weight: bold;
+      font-size: 2rem;
+  }
+
+  h2 {
+      margin-bottom: 20px;
+  }
+
+  h3 {
+      margin-top: 20px;
+      margin-bottom: 20px;
+  }
+
+  /* Table Styling */
+  .table {
+      width: 100%;
+      margin-top: 20px;
+      background-color: white;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+  }
+
+  .table th, .table td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+  }
+
+  .table th {
+      background-color: #3a3939;
+      color: white;
+  }
+</style>
+
+<div class="container">
+  <h2 class="mb-4">Select a Company to View Offer Letters</h2>
+  {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}   
+  <!-- Company Selection Form -->
+  <form method="post" class="mb-4">
+    {% csrf_token %}
+    <div class="form-group">
+      <div class="d-flex flex-column"> 
+        <label for="company" class="mb-2">Select Company:</label>
+        <select name="company_id" id="company" class="form-control form-control-sm mb-3" style="width: 300px;">
+          <option value="">-- Select Company --</option>
+          {% for company in companies %}
+              <option value="{{ company.id }}" {% if selected_company and company.id == selected_company.id %}selected{% endif %}>
+                  {{ company.name }}
+              </option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm mb-3" style="width: 160px;">View Offer Letters</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Display Company Details -->
+  {% if selected_company %}
+    <h3 class="mb-4">Offer Letters for {{ selected_company.name }}</h3>
+
+    <p><strong>Company Name:</strong> {{ selected_company.name }}</p>
+    <p><strong>Job Role:</strong> {{ selected_company.job_role }}</p>
+    <p><strong>Package:</strong> {{ selected_company.package }}</p>
+    <p><strong>Students Placed:</strong> {{ selected_company.students_placed }}</p>
+
+    <!-- Display the Student Data in a Table -->
+    {% if placed_students %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Roll Number</th>
+          <th>Name</th>
+          <th>Branch</th>
+          <th>Offer Letter</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for eligibility in placed_students %}
+        <tr>
+          <td>{{ eligibility.student.rollno }}</td>
+          <td>{{ eligibility.student.full_name }}</td>
+          <td>{{ eligibility.student.studentprofile.department }}</td>
+          <td>
+            {% if eligibility.student.offer_letter_url %}
+              <a href="{{ eligibility.student.offer_letter_url.url }}" target="_blank" style="text-decoration: none;">View Offer Letter</a>
+            {% else %}
+              Not Uploaded
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No placed students found.</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

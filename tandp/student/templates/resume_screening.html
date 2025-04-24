@@ -1,0 +1,97 @@
+{% extends 'stu_dashboard.html' %}
+
+{% block title %}Resume Screening{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://images.pexels.com/photos/6689392/pexels-photo-6689392.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: rgba(255, 255, 255, 0.448);
+        background-blend-mode: overlay;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 920px;
+    }
+
+    .card {
+        width: 900px;
+        background: rgba(255, 255, 255, 0.6); /* More transparency */
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(191, 185, 185, 0.5); /* Soft white border */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    }
+
+
+    .form-group {
+        text-align: center;
+    }
+
+    .btn-block {
+        display: block;
+        width: 20%;
+        background-color: rgb(245, 222, 243);
+    }
+
+    .result-section {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .image-container img {
+        max-width: 100%;
+        height: auto;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="text-center">Upload Resume for Screening</h1>
+
+            <!-- Upload Form -->
+            <div class="form-group mt-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="resume" accept="application/pdf" class="form-control mb-3" required>
+                    <button type="submit" class="btn btn-block">Upload Resume</button>
+                </form>
+            </div>
+
+            {% if file_url %}
+                <h3 class="text-center mt-4">File Uploaded</h3>
+                <p class="text-center"><strong>File URL:</strong> <a href="{{ file_url }}" target="_blank">{{ file_url }}</a></p>
+            {% endif %}
+
+            <!-- Job Recommendation -->
+            {% if scored_df %}
+                <div class="result-section">
+
+                    <!-- Score Distribution -->
+                    <h3 class="mt-4">Score Distribution</h3>
+                    <img src="data:image/png;base64,{{ bar_graph_img }}" alt="Bar Graph">
+
+                    <hr>
+
+                    <!-- Word Cloud -->
+                    <h3 class="mt-4">Word Cloud</h3>
+                    <img src="data:image/png;base64,{{ word_cloud_img }}" alt="Word Cloud">
+
+                    <hr>
+
+                    <h2>Job Recommendation</h2>
+                    <p>{{ job_recommendation }}</p>
+                </div>
+            {% else %}
+                <p class="text-center mt-4">Waiting for the result...</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

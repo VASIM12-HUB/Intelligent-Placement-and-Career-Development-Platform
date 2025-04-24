@@ -1,0 +1,356 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<style>
+  /* General Styling */
+  body {
+      background-color: #f8f9fa;
+  }
+
+  /* Container Styling */
+  .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+  }
+
+  h2, h3, h4 {
+      color: #343a40;
+      font-weight: bold;
+  }
+
+  /* Card Styling for Company Details */
+  .card {
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-body {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+  }
+
+  /* Form Section Styling */
+  .form-group {
+      margin-bottom: 20px;
+  }
+
+  .form-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+  }
+
+  .form-control {
+      border-radius: 5px;
+      border: 1px solid #ced4da;
+      box-shadow: none;
+  }
+
+  .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+  }
+
+  /* Select Box Styling */
+  select.form-control {
+      height: 35px;
+  }
+
+  /* Button Styling */
+  .btn {
+      border-radius: 5px;
+      padding: 6px 15px;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+  }
+
+  .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+  }
+
+  .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #004085;
+  }
+
+  .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+  }
+
+  .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+  }
+
+  .btn-info {
+      background-color: #17a2b8;
+      border-color: #17a2b8;
+  }
+
+  .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+  }
+
+  /* Table Styling */
+.table {
+    border-radius: 8px;
+    margin-top: 20px;
+    background-color: #fff;
+    white-space: nowrap;
+}
+
+.table th, .table td {
+    text-align: center;
+    padding: 12px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+
+</style>
+
+
+<h2>Select Company and Filter Students</h2>
+
+<!-- Display Company Details -->
+{% if company %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h3>{{ company.name }} - {{ company.job_role }}</h3>
+      <p>{{ company.description }}</p>
+      <p><strong>Eligibility Criteria:</strong> {{ company.eligibility_criteria }}</p>
+      <p><strong>Job Role:</strong> {{ company.job_role }}</p>
+      <p><strong>Package:</strong> {{ company.package }} LPA</p>
+      <p><strong>Academic Year</strong> {{ company.academic_year }}</p>
+    </div>
+  </div>
+{% endif %}
+
+{% if messages %}
+<div>
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'error' %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'warning' %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% elif message.tags == 'info' %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Filter Criteria Form -->
+<h4>Filter Students</h4>
+<form method="post">
+  {% csrf_token %}
+  <div class="d-flex flex-wrap mb-3">
+    <!-- Gender -->
+    <div class="form-group mr-2">
+      <label for="gender" class="mr-2">Gender:</label>
+      <select name="gender" class="form-control">
+        <option value="">--All--</option>
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+        <option value="O">Others</option>
+      </select>
+    </div>
+
+    <!-- SSC Percentage -->
+    <div class="form-group mr-2">
+      <label for="ssc_percentage" class="mr-2">SSC Percentage:</label>
+      <div class="d-flex">
+        <input type="number" name="ssc_percentage_min" class="form-control" placeholder="Min" min="0" max="100" style="width: 80px;" />
+        <input type="number" name="ssc_percentage_max" class="form-control ml-1" placeholder="Max" min="0" max="100" style="width: 80px;" />
+      </div>
+    </div>
+
+    <!-- Inter Percentage -->
+    <div class="form-group mr-2">
+      <label for="inter_percentage" class="mr-2">Inter Percentage:</label>
+      <div class="d-flex">
+        <input type="number" name="inter_percentage_min" class="form-control" placeholder="Min" min="0" max="100" style="width: 80px;" />
+        <input type="number" name="inter_percentage_max" class="form-control ml-1" placeholder="Max" min="0" max="100" style="width: 80px;" />
+      </div>
+    </div>
+
+    <!-- B.Tech CGPA -->
+    <div class="form-group mr-2">
+      <label for="btech_cgpa" class="mr-2">B.Tech CGPA:</label>
+      <div class="d-flex">
+        <input type="number" name="btech_cgpa_min" class="form-control" placeholder="Min" min="0" max="10" style="width: 80px;" />
+        <input type="number" name="btech_cgpa_max" class="form-control ml-1" placeholder="Max" min="0" max="10" style="width: 80px;" />
+      </div>
+    </div>
+
+    <!-- Branch Dropdown (dynamic) -->
+    <div class="form-group mr-2">
+      <label for="department">Branch</label>
+      <select name="department" id="department" class="form-control">
+        <option value="">All</option>
+        {% for department in departments %}
+          <option value="{{ department.department }}">{{ department.department }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Academic Year Filter -->
+    <div class="form-group mr-2">
+     <label for="academic_year">Academic Year</label>
+     <select name="academic_year" id="academic_year" class="form-control">
+      <option value="">All</option>
+      {% for year in academic_years %}
+        <option value="{{ year }}">{{ year }}-{{ year|add:"1" }}</option>
+      {% endfor %}
+     </select>
+    </div>
+
+    <!-- Eligibility -->
+    <div class="form-group mr-2">
+      <label for="eligibility_status">Eligibility Status:</label>
+      <select name="eligibility_status" class="form-control">
+          <option value="">--All--</option>
+          <option value="ELIGIBLE_NOT_APPLIED">Eligible (Not Applied)</option>
+          <option value="ELIGIBLE_APPLIED">Eligible (Applied)</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="PLACED">Placed</option>
+      </select>
+    </div>
+  </div>
+
+
+  <!-- Button Row -->
+  <div class="row mb-3">
+    <div class="col-12 text-right">
+      <button type="submit" class="btn btn-primary" style="width: 120px; height: 40px;">Filter</button>
+    </div>
+  </div>
+</form>
+
+<!-- Filtered Students List with Checkboxes -->
+<h3>Filtered Students:</h3>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="select_all" /></th>
+          <th>Roll No</th>
+          <th>Full Name</th>
+          <th>Department</th>
+          <th>Gender</th>
+          <th>Personal Email</th>
+          <th>College Email</th>
+          <th>SSC Percentage</th>
+          <th>Inter Percentage</th>
+          <th>B.Tech CGPA</th>
+          <th>Academic Year</th>
+          <th>Application Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td><input type="checkbox" name="selected_students" value="{{ student.rollno }}" class="student_checkbox" /></td>
+          <td>{{ student.rollno }}</td>
+          <td>{{ student.full_name }}</td>
+          <td>{{ student.studentprofile.department }}</td>
+          <td>{{ student.studentprofile.get_gender_display }}</td>
+          <td>{{ student.studentprofile.personal_email }}</td>
+          <td>{{ student.studentprofile.college_email }}</td>
+          <td>{{ student.studentprofile.ssc_percentage }}</td>
+          <td>{{ student.studentprofile.inter_diploma_percentage }}</td>
+          <td>{{ student.studentprofile.btech_cgpa }}</td>
+          <td>{{ student.studentprofile.academic_year }}</td>
+          <td>
+            {% for rollno, status in eligibility_statuses %}
+                {% if rollno == student.rollno %}
+                    {{ status }}
+                {% endif %}
+            {% endfor %}
+          </td>        
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="10">No students found matching the selected filters.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Dynamic Subject Input -->
+  <div class="form-group">
+    <label for="subject">Email Subject:</label>
+    <input type="text" name="subject" class="form-control" placeholder="Enter subject for email" required />
+  </div>
+
+  <div class="form-group">
+    <label for="message">Email Message:</label>
+    <textarea name="message" class="form-control" placeholder="Enter the email content..." required></textarea>
+  </div>
+
+  <!-- Attachments -->
+  <div class="form-group">
+    <label for="attachments">Attachment:</label>
+    <input type="file" name="attachments" class="form-control" multiple />
+  </div>
+
+  <!-- BCC Recipients -->
+  <div class="form-group">
+    <label for="bcc">BCC Recipients (Separate emails by commas):</label>
+    <input type="text" name="bcc" class="form-control" placeholder="Enter BCC recipients" />
+  </div>
+
+  <button type="submit" name="send_email" class="btn btn-success">Send Email</button>
+</form>
+
+<!-- Export to Excel Button -->
+<form method="post" action="{% url 'export_to_excel' company.id %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-info mt-3">Export Applied Students to Excel</button>
+</form>
+
+<script>
+  // JavaScript to handle Select All checkbox functionality
+  document.getElementById('select_all').addEventListener('change', function () {
+    const checkboxes = document.querySelectorAll('.student_checkbox');
+    checkboxes.forEach(function (checkbox) {
+      checkbox.checked = document.getElementById('select_all').checked;
+    });
+  });
+</script>
+
+{% endblock %}

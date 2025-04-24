@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://images.pexels.com/photos/2088142/pexels-photo-2088142.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Sidebar container */
+        .sidebar-container {
+            background: linear-gradient(140deg, #fbc2eb,#50c9c3, #a6c1ee,#4a90e2);
+            background-size: cover;
+            padding: 18px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+            width: 280px;
+            color: #333;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-container.collapsed {
+            transform: translateX(-250px);
+            width: 60px;
+        }
+
+        .sidebar-container h4 {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-container.collapsed h4 {
+            opacity: 0;
+        }
+
+        .sidebar-nav {
+            background-color: #f7f7f7;
+            padding: 12px;
+            text-align: left;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 78%;
+        }
+
+        .sidebar-container a {
+            color: #333;
+            padding: 10px 20px;
+            display: block;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar-container.collapsed a {
+            padding: 10px;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .sidebar-container.collapsed a span {
+            display: none;
+        }
+
+        .sidebar-container a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .active {
+            background-color: #b2cfdb;
+            color: white;
+        }
+
+        .content {
+            margin-left: 280px;
+            padding: 25px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-container.collapsed + .content {
+            margin-left: 60px;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            left: 245px;
+            top: 20px;
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-container.collapsed + .content .sidebar-toggle {
+            left: 10px;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-container.collapsed .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-container {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+        }
+
+        .faculty-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start;
+            margin-top: 1rem;
+        }
+
+        .faculty-card {
+            flex: 0 1 calc(50% - 20px);
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.6);
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            min-width: 350px;
+            max-width: 500px;
+            opacity: 0.9;
+            backdrop-filter: blur(5px);
+        }
+
+        .faculty-card-image {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .faculty-card-details {
+            text-align: left;
+            font-size: 14px;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-toggle">
+        <i class="fas fa-chevron-left toggle-icon"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar-container">
+        <ul class="list-unstyled sidebar-nav">
+            <h4 style="color: #333; font-size: 18px;">Faculty Dashboard</h4>
+            <li>
+                <a href="{% url 'faculty_dashboard' %}" class="{% if request.resolver_match.url_name == 'faculty_dashboard' %}active{% endif %}">
+                    <i class="fas fa-chalkboard-teacher"></i><span> Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'add_new_faculty' %}" class="{% if request.resolver_match.url_name == 'add_new_faculty' %}active{% endif %}">
+                    <i class="fas fa-user-plus"></i><span> Add Faculty</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'department_faculty' %}" class="{% if request.resolver_match.url_name == 'department_faculty' %}active{% endif %}">
+                    <i class="fas fa-user-tie"></i><span> Department Faculty</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'department_students' %}" class="{% if request.resolver_match.url_name == 'department_students' %}active{% endif %}">
+                    <i class="fas fa-user-graduate"></i><span> Department Students</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dept_placed_students' %}" class="{% if request.resolver_match.url_name == 'dept_placed_students' %}active{% endif %}">
+                    <i class="fas fa-award"></i><span> Department Placed Students</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'placed_students' %}" class="{% if request.resolver_match.url_name == 'placed_students' %}active{% endif %}">
+                    <i class="fas fa-briefcase"></i><span> Placed Students</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'faculty_logout' %}" class="{% if request.resolver_match.url_name == 'faculty_logout' %}active{% endif %}">
+                    <i class="fas fa-sign-out-alt"></i><span> Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <!-- Main Content -->
+    <div class="content">
+        {% block content %}
+        <h2>Welcome to the Faculty Dashboard</h2>
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% elif message.tags == 'info' %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        <!-- Faculty Profile Card -->
+        <div class="faculty-list">
+            <div class="faculty-card">
+                <div class="faculty-card-image">
+                    {% if faculty_member.profile_picture %}
+                        <img src="{{ faculty_member.profile_picture.url }}" alt="Profile Picture" style="border-radius: 50%; width: 120px; height: 120px;">
+                    {% else %}
+                        <img src="https://cdn-icons-png.flaticon.com/512/4042/4042356.png" alt="Default Profile Picture" style="border-radius: 50%; width: 120px; height: 120px;">
+                    {% endif %}
+                </div>
+                <div class="faculty-card-details">
+                    <h4>Name: {{ faculty_member.full_name }}</h4>
+                    <p><strong>Email:</strong> {{ faculty_member.custom_user.email }}</p>
+                    <p><strong>Username:</strong> {{ faculty_member.custom_user.username }}</p>
+                    <p><strong>Department:</strong> {{ faculty_member.department }}</p>
+                    <p><strong>Phone:</strong> {{ faculty_member.phone_number }}</p>
+                </div>
+            </div>
+
+        {% block additional_content %}
+        {% endblock %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.querySelector('.sidebar-container');
+            const toggleBtn = document.querySelector('.sidebar-toggle');
+            const toggleIcon = document.querySelector('.toggle-icon');
+
+            // Check sidebar state from localStorage
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                toggleIcon.style.transform = 'rotate(180deg)';
+            }
+
+            toggleBtn.addEventListener('click', function () {
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                toggleIcon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            });
+        });
+    </script>
+</body>
+</html>
